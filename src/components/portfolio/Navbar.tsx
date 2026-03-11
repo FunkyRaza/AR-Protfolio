@@ -96,17 +96,20 @@ const Navbar = () => {
                   to={toUrl}
                   onClick={() => handleLinkClick(link.href)}
                   className={cn(
-                    "relative px-5 py-2.5 text-xs font-bold uppercase tracking-widest transition-colors duration-300",
-                    isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                    "relative px-4 py-2 text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300",
+                    isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground hover:scale-105"
                   )}
                 >
                   <span className="relative z-10">{link.label}</span>
                   {isActive && (
                     <motion.div
                       layoutId="active-pill"
-                      className="absolute inset-0 bg-secondary rounded-full -z-0 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-white/40 dark:border-white/5"
-                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                      className="absolute inset-0 bg-secondary/80 rounded-full -z-0 border border-white/50 dark:border-white/5 shadow-sm"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
+                  )}
+                  {!isActive && (
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary/40 group-hover:w-1/2 transition-all duration-300" />
                   )}
                 </Link>
               );

@@ -11,27 +11,26 @@ export const useScrollSpy = (ids: string[], offset: number = 100) => {
 
     useEffect(() => {
         const handleScroll = () => {
-            // If at the very top, don't highlight anything specific
-            if (window.scrollY < 50) {
-                setActiveId("");
+            const scrollPosition = window.scrollY + offset + 50; // Add safe buffer
+
+            // If at the very top, highlight home or nothing
+            if (window.scrollY < 100) {
+                setActiveId(ids.includes("#home") ? "#home" : "");
                 return;
             }
 
-            const scrollPosition = window.scrollY + offset;
-
+            let currentActive = "";
             for (const id of ids) {
                 const element = document.getElementById(id.replace("#", ""));
                 if (element) {
-                    const { offsetTop, offsetHeight } = element;
-                    if (
-                        scrollPosition >= offsetTop &&
-                        scrollPosition < offsetTop + offsetHeight
-                    ) {
-                        setActiveId(id);
-                        break;
+                    const rect = element.getBoundingClientRect();
+                    const top = rect.top + window.scrollY;
+                    if (scrollPosition >= top && scrollPosition < top + element.offsetHeight) {
+                        currentActive = id;
                     }
                 }
             }
+            setActiveId(currentActive);
         };
 
         window.addEventListener("scroll", handleScroll);

@@ -17,17 +17,24 @@ const Index = () => {
 
   useEffect(() => {
     if (hash) {
-      const element = document.querySelector(hash);
-      if (element) {
-        const headerOffset = 100;
-        const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      // Use requestAnimationFrame for smoother timing
+      const scrollWithOffset = () => {
+        const element = document.querySelector(hash);
+        if (element) {
+          const headerOffset = 100;
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: "smooth"
-        });
-      }
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+          });
+        }
+      };
+
+      // Slight delay to ensure DOM is ready
+      const timer = setTimeout(scrollWithOffset, 150);
+      return () => clearTimeout(timer);
     }
   }, [hash]);
 
