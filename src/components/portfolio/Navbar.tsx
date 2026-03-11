@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
-import { Menu, X, Download } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { useScrollSpy } from "@/hooks/useScrollSpy";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
 
 const links = [
-  { label: "About", href: "#about" },
   { label: "Skills", href: "#skills" },
+  { label: "About", href: "#about" },
+  { label: "Experience", href: "#experience" },
+  { label: "Academic", href: "#education" },
   { label: "Design", href: "/design" },
   { label: "Projects", href: "/projects" },
-  { label: "Experience", href: "#experience" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -19,11 +20,9 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
 
-  // Sections to spy on when on home page
-  const sectionIds = ["#about", "#skills", "#experience", "#contact"];
+  const sectionIds = ["#home", "#skills", "#about", "#experience", "#education", "#contact"];
   const spyActiveId = useScrollSpy(sectionIds);
 
-  // Determine if a link is active based on scroll or route
   const getIsActive = (href: string) => {
     if (href.startsWith("#")) {
       return pathname === "/" && spyActiveId === href;
@@ -31,190 +30,157 @@ const Navbar = () => {
     return pathname === href;
   };
 
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001,
-  });
-
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      setScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Handle clicking a link
   const handleLinkClick = (href: string) => {
     setOpen(false);
     if (href.startsWith("#") && pathname === "/") {
       const element = document.querySelector(href);
       if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
+        const headerOffset = 100;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
+        });
       }
     }
   };
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ type: "spring", stiffness: 100, damping: 20 }}
+    <motion.header
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "fixed left-0 right-0 z-50 transition-all duration-700 ease-in-out",
-        scrolled
-          ? "top-6 px-4"
-          : "top-0 px-0"
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+        scrolled ? "py-4" : "py-8"
       )}
     >
-      <div className={cn(
-        "relative mx-auto flex items-center transition-all duration-700 ease-in-out",
-        scrolled
-          ? "max-w-5xl h-16 px-10 rounded-full bg-white/90 backdrop-blur-3xl border border-black/5 shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
-          : "max-w-7xl h-24 px-12 bg-transparent border-transparent shadow-none"
-      )}>
-        {/* Logo - Left Side */}
-        <div className="flex-1 flex justify-start">
+      <div className="container-narrow px-6">
+        <nav className={cn(
+          "flex items-center justify-between px-2 py-2 rounded-full transition-all duration-500",
+          scrolled ? "glass-morphism shadow-lg" : "bg-transparent border-transparent"
+        )}>
+          {/* Logo */}
           <Link
             to="/"
             onClick={() => handleLinkClick("#home")}
-            className={cn(
-              "font-bold tracking-tighter text-foreground group transition-all duration-500",
-              scrolled ? "text-2xl" : "text-4xl"
-            )}
+            className="group flex items-center gap-2 pl-4"
           >
-            AR<span className="text-highlight group-hover:animate-pulse">.</span>
+            <div className="w-10 h-10 bg-foreground text-background rounded-full flex items-center justify-center font-display font-black text-xl transition-transform group-hover:scale-110">
+              AR
+            </div>
+            <span className="font-display font-bold tracking-tight text-xl hidden sm:inline-block">
+              Ahmed<span className="text-primary">.</span>
+            </span>
           </Link>
-        </div>
 
-        {/* Desktop Links - Always Centered */}
-        <div className="hidden md:flex flex-[3] justify-center items-center">
-          <ul className={cn(
-            "flex items-center gap-2 p-1.5 rounded-full transition-all duration-500",
-            scrolled ? "bg-black/5 border border-black/5" : "bg-transparent border-transparent"
-          )}>
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-1">
             {links.map((link) => {
               const isActive = getIsActive(link.href);
               const toUrl = link.href.startsWith("#") ? `/${link.href}` : link.href;
 
               return (
-                <li key={link.href}>
-                  <Link
-                    to={toUrl}
-                    onClick={() => handleLinkClick(link.href)}
-                    className={cn(
-                      "relative px-6 py-2.5 text-sm font-bold transition-all duration-300 rounded-full flex items-center justify-center",
-                      isActive
-                        ? (scrolled ? "text-white" : "text-highlight underline underline-offset-8 decoration-2")
-                        : "text-muted-foreground hover:text-foreground hover:bg-black/5"
-                    )}
-                  >
-                    <span className="relative z-10">{link.label}</span>
-                    {isActive && scrolled && (
-                      <motion.div
-                        layoutId="nav-pill"
-                        className="absolute inset-0 bg-black rounded-full shadow-md"
-                        transition={{ type: "spring", bounce: 0.1, duration: 0.4 }}
-                      />
-                    )}
-                  </Link>
-                </li>
+                <Link
+                  key={link.href}
+                  to={toUrl}
+                  onClick={() => handleLinkClick(link.href)}
+                  className={cn(
+                    "relative px-5 py-2.5 text-xs font-bold uppercase tracking-widest transition-colors duration-300",
+                    isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <span className="relative z-10">{link.label}</span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="active-pill"
+                      className="absolute inset-0 bg-secondary rounded-full -z-0 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-white/40 dark:border-white/5"
+                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    />
+                  )}
+                </Link>
               );
             })}
-          </ul>
-        </div>
+          </div>
 
-        {/* Action Button - Right Side */}
-        <div className="flex-1 flex justify-end items-center">
-          <div className="flex items-center gap-5">
-            <a
-              href="/resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(
-                "hidden lg:flex items-center gap-2 px-8 py-3 text-sm font-black rounded-full transition-all duration-500 transform active:scale-95 shadow-lg",
-                scrolled
-                  ? "bg-blue-600 text-white hover:bg-blue-700 hover:scale-105"
-                  : "bg-primary text-primary-foreground hover:scale-110"
-              )}
+          {/* Action Button */}
+          <div className="flex items-center gap-4">
+            <Link
+              to="/#contact"
+              onClick={() => handleLinkClick("#contact")}
+              className="hidden lg:flex items-center gap-2 px-6 py-2.5 bg-foreground text-background hover:bg-primary hover:text-white rounded-full text-xs font-bold transition-all duration-300 group"
             >
-              Resume <Download size={18} />
-            </a>
+              HIRE ME
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
 
-            {/* Mobile toggle */}
+            {/* Mobile Menu Toggle */}
             <button
               onClick={() => setOpen(!open)}
-              className={cn(
-                "md:hidden p-3 text-foreground active:scale-90 transition-all rounded-full",
-                scrolled ? "bg-black/10" : "bg-white/10 backdrop-blur-sm"
-              )}
+              className="md:hidden w-10 h-10 flex items-center justify-center rounded-full bg-secondary text-foreground"
               aria-label="Toggle menu"
             >
-              {open ? <X size={28} /> : <Menu size={28} />}
+              {open ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
-        </div>
-
-        {/* Scroll Progress Bar (Subtle indicator) */}
-        {scrolled && (
-          <motion.div
-            className="absolute bottom-1.5 left-1/2 -translate-x-1/2 h-[1.5px] bg-black/10 rounded-full overflow-hidden"
-            style={{ width: "20%" }}
-          >
-            <motion.div
-              className="h-full bg-blue-600"
-              style={{ scaleX, transformOrigin: "left" }}
-            />
-          </motion.div>
-        )}
+        </nav>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="absolute top-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-[90vw] max-w-xs p-4 rounded-[2.5rem] bg-background/90 backdrop-blur-3xl border border-white/20 shadow-2xl md:hidden"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden container-narrow px-6 mt-4"
           >
-            <ul className="flex flex-col gap-1">
-              {links.map((link) => {
-                const isActive = getIsActive(link.href);
-                const toUrl = link.href.startsWith("#") ? `/${link.href}` : link.href;
+            <div className="glass-morphism rounded-[2rem] p-6 overflow-hidden">
+              <ul className="flex flex-col gap-2">
+                {links.map((link) => {
+                  const isActive = getIsActive(link.href);
+                  const toUrl = link.href.startsWith("#") ? `/${link.href}` : link.href;
 
-                return (
-                  <li key={link.href}>
-                    <Link
-                      to={toUrl}
-                      onClick={() => handleLinkClick(link.href)}
-                      className={cn(
-                        "flex items-center justify-center py-4 rounded-full text-lg font-bold transition-all",
-                        isActive
-                          ? "bg-black text-white shadow-lg"
-                          : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                      )}
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                );
-              })}
-              <li className="mt-2">
-                <a
-                  href="/resume.pdf"
-                  className="w-full flex items-center justify-center gap-2 py-5 rounded-full bg-blue-600 text-white font-black shadow-lg uppercase tracking-widest text-xs"
+                  return (
+                    <li key={link.href}>
+                      <Link
+                        to={toUrl}
+                        onClick={() => handleLinkClick(link.href)}
+                        className={cn(
+                          "block py-3 px-6 rounded-2xl text-lg font-semibold transition-all",
+                          isActive ? "bg-primary text-white" : "text-foreground hover:bg-secondary"
+                        )}
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+              <div className="mt-6 pt-6 border-t border-border">
+                <Link
+                  to="#contact"
+                  onClick={() => handleLinkClick("#contact")}
+                  className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl bg-foreground text-background font-bold"
                 >
-                  Get Resume <Download size={18} />
-                </a>
-              </li>
-            </ul>
+                  GET IN TOUCH <ArrowRight size={18} />
+                </Link>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+    </motion.header>
   );
 };
 
