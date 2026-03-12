@@ -37,7 +37,6 @@ const Footer = () => {
             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
               {[
                 { label: "About", href: "/#about" },
-                { label: "Design", href: "/design" },
                 { label: "Projects", href: "/projects" },
                 { label: "Experience", href: "/#experience" },
                 { label: "Academic", href: "/#education" },
