@@ -1,5 +1,6 @@
-import { motion } from "framer-motion";
-import { Mail, Github, Linkedin, Dribbble, Twitter as XIcon } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { Mail, Github, Linkedin, Dribbble, Twitter as XIcon, ArrowRight, MousePointer2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const socialLinks = [
@@ -9,112 +10,184 @@ const socialLinks = [
   { icon: XIcon, href: "https://x.com/raza_uxui", label: "X (Twitter)" },
 ];
 
+const roles = [
+  "UI/UX Designer",
+  "Frontend Developer",
+  "Product Thinker",
+  "Creative Coder"
+];
+
 const Hero = () => {
+  const [roleIndex, setRoleIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollY } = useScroll();
+  
+  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRoleIndex((prev) => (prev + 1) % roles.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section id="home" className="relative min-h-screen flex items-center overflow-hidden bg-background">
-      {/* Dynamic Background Elements */}
-      <div className="absolute inset-0 overflow-hidden -z-10">
-        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full animate-pulse" />
-        <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] bg-blue-400/10 blur-[100px] rounded-full animate-pulse delay-700" />
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-[0.4]" />
+    <section 
+      id="home" 
+      ref={containerRef}
+      className="relative min-h-[110vh] flex items-center justify-center overflow-hidden bg-background pt-20"
+    >
+      {/* Premium Background Layer */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(var(--primary-rgb),0.05),transparent_70%)]" />
+        <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[120px] rounded-full animate-float" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-500/5 blur-[120px] rounded-full animate-float-slow" />
+        
+        {/* Subtle Grid */}
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
       </div>
 
-      <div className="container-narrow w-full section-padding relative">
-        <div className="flex flex-col items-start max-w-4xl">
+      <div className="container-narrow relative z-10">
+        <div className="flex flex-col items-center text-center">
+          {/* Status Badge */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center gap-2 px-3 py-1 rounded-full bg-secondary text-secondary-foreground border border-border/50 mb-8"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-secondary/50 border border-border/50 backdrop-blur-md mb-12"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
-            <span className="text-xs font-bold uppercase tracking-wider">Available for projects</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/70">
+              Available for new projects
+            </span>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1] }}
+          {/* Main Title */}
+          <div className="relative mb-12">
+            <motion.h1
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="text-7xl md:text-9xl lg:text-[12rem] font-display font-black tracking-tighter leading-[0.8] text-foreground"
+            >
+              Ahmed <br />
+              <span className="text-gradient">Raza.</span>
+            </motion.h1>
+            
+            {/* Abstract Shape Decor */}
+            <motion.div 
+               animate={{ rotate: 360 }}
+               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+               className="absolute -top-10 -right-20 w-32 h-32 border border-primary/20 rounded-[2rem] hidden lg:block"
+            />
+          </div>
+
+          {/* Role Carousel */}
+          <div className="h-12 mb-12 overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={roles[roleIndex]}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -20, opacity: 0 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="text-2xl md:text-4xl font-display font-bold text-muted-foreground"
+              >
+                {roles[roleIndex]}<span className="text-primary">.</span>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Professional Bio */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="max-w-2xl text-lg md:text-xl text-muted-foreground leading-relaxed font-light mb-16"
           >
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-display font-black tracking-tight leading-[0.85] mb-8">
-              <span className="inline-block hover:scale-[1.02] transition-transform duration-500 cursor-default">
-                Ahmed
-              </span>
-              <br />
-              <span className="text-gradient">
-                Raza.
-              </span>
-            </h1>
-          </motion.div>
+            I architect <span className="text-foreground font-medium underline decoration-primary/30 underline-offset-8">seamless digital ecosystems</span> where human-centric design meets robust engineering. Elevating brands through strategic visual storytelling.
+          </motion.p>
 
+          {/* CTA Group */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="grid md:grid-cols-[1fr_auto] gap-12 items-end w-full"
-          >
-            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-xl font-light">
-              Crafting <span className="text-foreground font-medium">high-performance digital experiences</span> at the intersection of design and code. Based in India, working globally.
-            </p>
-
-            <div className="flex gap-4">
-              {socialLinks.map((social, i) => (
-                <motion.a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 + (i * 0.1) }}
-                  className="p-3 rounded-full bg-secondary hover:bg-primary hover:text-white transition-all duration-300 border border-border"
-                  aria-label={social.label}
-                >
-                  <social.icon size={20} />
-                </motion.a>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-            className="flex flex-wrap gap-6 mt-8"
+            transition={{ delay: 0.6 }}
+            className="flex flex-wrap justify-center gap-8 mb-20"
           >
             <Link
               to="/projects"
-              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-foreground text-background text-sm font-bold rounded-full overflow-hidden transition-all duration-300 active:scale-95"
+              className="group relative flex items-center gap-4 px-10 py-5 bg-foreground text-background rounded-full font-black tracking-widest text-xs overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 active:scale-95"
             >
-              <span className="relative z-10">SELECTED WORK</span>
-              <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              <span className="relative z-10">EXPLORE ARCHIVE</span>
+              <ArrowRight size={16} className="relative z-10 group-hover:translate-x-2 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
             </Link>
+
             <a
               href="#contact"
-              className="inline-flex items-center gap-2 p-4 text-sm font-bold bg-transparent border-b-2 border-foreground/20 hover:border-primary transition-all duration-300 group"
+              onClick={(e) => {
+                const element = document.querySelector("#contact");
+                if (element) {
+                  e.preventDefault();
+                  const headerOffset = 100;
+                  const elementPosition = element.getBoundingClientRect().top;
+                  const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                  window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                  });
+                }
+              }}
+              className="group flex items-center gap-3 text-[10px] font-black tracking-widest text-foreground hover:text-primary transition-all duration-300"
             >
-              GET IN TOUCH
-              <Mail size={18} className="group-hover:translate-x-1 transition-transform" />
+              <div className="w-12 h-12 rounded-full border border-border flex items-center justify-center group-hover:border-primary transition-colors">
+                <Mail size={18} />
+              </div>
+              STAY IN TOUCH
             </a>
           </motion.div>
-        </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-          className="absolute bottom-12 right-12 hidden lg:flex flex-col items-center gap-4"
-        >
-          <span className="[writing-mode:vertical-lr] text-xs font-bold tracking-widest text-muted-foreground uppercase">Scroll Down</span>
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-            className="h-10 w-0.5 bg-gradient-to-b from-primary to-transparent"
-          />
-        </motion.div>
+          {/* Social Social */}
+          <div className="flex gap-10">
+            {socialLinks.map((social, i) => (
+              <motion.a
+                key={social.label}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 + i * 0.1 }}
+                className="text-muted-foreground hover:text-primary transition-all duration-300 transform hover:-translate-y-1"
+                aria-label={social.label}
+              >
+                <social.icon size={22} />
+              </motion.a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Decorative Bottom Elements */}
+      <motion.div 
+        style={{ y: y1, opacity }}
+        className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 opacity-30"
+      >
+        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground">Scroll</span>
+        <div className="w-[1.5px] h-20 bg-gradient-to-b from-primary to-transparent" />
+      </motion.div>
+
+      {/* Side Metadata */}
+      <div className="absolute left-12 bottom-12 hidden xl:block">
+        <div className="flex items-center gap-4 rotate-[-90deg] origin-left translate-y-full">
+          <span className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground opacity-50">Portfolio Ref. 2026.03</span>
+          <div className="w-8 h-[1px] bg-border" />
+        </div>
       </div>
     </section>
   );
