@@ -127,14 +127,8 @@ const Navbar = () => {
             onClick={() => handleLinkClick("#home")}
             className="group flex items-center gap-3 pl-4"
           >
-            <motion.div
-              whileHover={{ rotate: [0, -10, 10, 0] }}
-              className="w-10 h-10 text-black rounded-full flex items-center justify-center font-display font-black text-xl"
-            >
-              AR.
-            </motion.div>
-            <span className="font-display font-bold tracking-tighter text-2xl hidden sm:inline-block text-foreground">
-              {/* Ahmed<span className="text-primary">.</span> */}
+            <span className="font-display font-black tracking-tighter text-2xl text-foreground group-hover:text-primary transition-colors">
+              AR<span className="text-primary">.</span>
             </span>
           </Link>
 

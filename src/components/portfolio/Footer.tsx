@@ -19,11 +19,8 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="lg:col-span-8">
             <Link to="/" className="group inline-flex items-center gap-2 mb-8">
-              <div className="w-10 h-10 bg-foreground text-background rounded-full flex items-center justify-center font-display font-black text-xl transition-transform group-hover:scale-110">
-                AR
-              </div>
-              <span className="font-display font-bold tracking-tight text-xl text-foreground">
-                Ahmed<span className="text-primary">.</span>
+              <span className="font-display font-black tracking-tighter text-2xl text-foreground group-hover:text-primary transition-colors uppercase">
+                AR<span className="text-primary">.</span>
               </span>
             </Link>
             <p className="text-lg text-muted-foreground font-light leading-relaxed max-w-2xl">
